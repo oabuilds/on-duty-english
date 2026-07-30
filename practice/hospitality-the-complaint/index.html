@@ -13,6 +13,21 @@
      contains "free phrase sheets", which defeated the first attempt at this check. -->
 <meta name="ode:page" content="practice-sheet">
 <meta name="ode:slug" content="hospitality-the-complaint">
+<!-- Canonical tracks practice_base_url — the host that ACTUALLY SERVES this file
+     today — and moves to ondutyenglish.com automatically when
+     `practice_domain.py --flip` rewrites that one value.
+     It deliberately does NOT point at practice_canonical_url ahead of the
+     Cloudflare Worker route. The tempting reasoning is that a canonical pointing
+     somewhere not yet live is simply ignored; that is true of a 404, and this is
+     not a 404. ondutyenglish.com/practice/* falls through to the SPA catch-all and
+     returns HTTP 200 with the marketing page, so a crawler would follow the
+     canonical, find a valid-looking page, and could drop the real sheet in favour
+     of it. A soft 404 breaks assumptions that a hard one would not. -->
+<link rel="canonical" href="https://ondutyenglish.com/practice/hospitality-the-complaint/">
+<meta property="og:url" content="https://ondutyenglish.com/practice/hospitality-the-complaint/">
+<meta property="og:title" content="8 Hotel English Phrases That Calm an Angry Guest">
+<meta property="og:description" content="Eight phrases for the moment a guest complaint becomes serious. These are not vocabulary words. They are the exact sentences a senior front desk professional uses, in the order they use them.">
+<meta property="og:site_name" content="On Duty English">
 <style>
   :root {
     --bg:#060A24; --card:#0D1331; --text:#F8F8FA; --muted:#9EA3BB;
@@ -102,7 +117,7 @@
           <div class="why"><strong>Why it works.</strong> You are agreeing with the guest, not only saying sorry. Saying sorry again and again can sound weak. When you agree, the guest feels you are on their side.</div>
           <p class="eg">That should not have happened, and I understand why you are upset.</p>
           <p class="tl">Hindi dapat nangyari iyon.</p>
-          <audio controls preload="none" src="audio/phrase_01.mp3"></audio>
+          <span class="noaudio">audio coming with the lesson</span>
         </div>
       </article>
       <article class="phrase">
@@ -115,7 +130,7 @@
           <div class="why"><strong>Why it works.</strong> The important words are right now. I will try sounds like no. When you say right now, the guest knows you have already started, so they stop repeating themselves.</div>
           <p class="eg">Let me see what I can do right now, Mister Adeyemi.</p>
           <p class="tl">Tingnan ko po kung ano ang magagawa ko ngayon din.</p>
-          <audio controls preload="none" src="audio/phrase_02.mp3"></audio>
+          <span class="noaudio">audio coming with the lesson</span>
         </div>
       </article>
       <article class="phrase">
@@ -128,7 +143,7 @@
           <div class="why"><strong>Why it works.</strong> You say who will fix it, and when. I am going to is a promise. I will try is not. Guests ask for a manager when nobody takes the job, so this sentence keeps it with you.</div>
           <p class="eg">I am going to fix this for you tonight. Give me two minutes.</p>
           <p class="tl">Aayusin ko po ito para sa inyo ngayong gabi.</p>
-          <audio controls preload="none" src="audio/phrase_03.mp3"></audio>
+          <span class="noaudio">audio coming with the lesson</span>
         </div>
       </article>
       <article class="phrase">
@@ -141,7 +156,7 @@
           <div class="why"><strong>Why it works.</strong> Now you move from the problem to the answer. If you begin with unfortunately, the guest waits for bad news. If you begin with here is, they listen.</div>
           <p class="eg">Here is what I can offer you, and please tell me if it does not work.</p>
           <p class="tl">Ito po ang maiaalok ko sa inyo.</p>
-          <audio controls preload="none" src="audio/phrase_04.mp3"></audio>
+          <span class="noaudio">audio coming with the lesson</span>
         </div>
       </article>
       <article class="phrase">
@@ -154,7 +169,7 @@
           <div class="why"><strong>Why it works.</strong> Say it is done, not that it might happen. A question sounds like you are not sure. I have moved you tells the guest the problem is already finished.</div>
           <p class="eg">I have moved you to a room on the executive floor at no extra charge.</p>
           <p class="tl">Inilipat ko na po kayo sa isang kuwarto sa executive floor.</p>
-          <audio controls preload="none" src="audio/phrase_05.mp3"></audio>
+          <span class="noaudio">audio coming with the lesson</span>
         </div>
       </article>
       <article class="phrase">
@@ -167,7 +182,7 @@
           <div class="why"><strong>Why it works.</strong> Do not blame the computer. It may be true, but it does not help. The guest wants a person, not a reason. This sentence usually stops a guest asking for a manager.</div>
           <p class="eg">I will take personal responsibility for this until you are settled.</p>
           <p class="tl">Personal ko pong pananagutan ito.</p>
-          <audio controls preload="none" src="audio/phrase_06.mp3"></audio>
+          <span class="noaudio">audio coming with the lesson</span>
         </div>
       </article>
       <article class="phrase">
@@ -180,7 +195,7 @@
           <div class="why"><strong>Why it works.</strong> Asking your manager is not losing. Said this way, it sounds like you are getting more help for the guest. The word properly promises a better answer, not just another person.</div>
           <p class="eg">Let me get my manager so we can sort this out properly for you.</p>
           <p class="tl">Tatawagin ko po ang manager para maayos ito nang maayos.</p>
-          <audio controls preload="none" src="audio/phrase_07.mp3"></audio>
+          <span class="noaudio">audio coming with the lesson</span>
         </div>
       </article>
       <article class="phrase">
@@ -193,7 +208,7 @@
           <div class="why"><strong>Why it works.</strong> Put right sounds more professional than fix. Is that okay makes a guest say yes even when they are not happy. This question asks if anything is still wrong.</div>
           <p class="eg">Is there anything else I can put right for you this evening?</p>
           <p class="tl">Mayroon pa po bang iba na maaayos ko para sa inyo?</p>
-          <audio controls preload="none" src="audio/phrase_08.mp3"></audio>
+          <span class="noaudio">audio coming with the lesson</span>
         </div>
       </article>
 
