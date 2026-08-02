@@ -28,6 +28,9 @@
 <meta property="og:title" content="8 English Lines That Make a Nurse Handover Work">
 <meta property="og:description" content="Eight lines for handing over a patient at the end of a shift, each with the reason it works and the weaker version it replaces. Listen, then say each one out loud.">
 <meta property="og:site_name" content="On Duty English">
+<meta property="og:image" content="https://i.ytimg.com/vi/JVXyDQwe2BA/maxresdefault.jpg">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "8 English Lines That Make a Nurse Handover Work", "url": "https://ondutyenglish.com/practice/medical-the-handover/", "description": "Eight lines for handing over a patient at the end of a shift, each with the reason it works and the weaker version it replaces. Listen, then say each one out loud.", "inLanguage": "en", "learningResourceType": "practice sheet", "educationalLevel": "B1-C1", "teaches": ["I will start with the one I am most worried about.", "Bay three, Mrs Okafor, day two after surgery.", "The part of her history you need tonight is this.", "My assessment is that she is not settling.", "What I need from you this shift is this.", "I have not managed to do her four o'clock checks.", "If her pain goes above six, she needs a doctor, not more tablets.", "She is yours from now. What do you need from me before I go?"], "isAccessibleForFree": true, "provider": {"@type": "Organization", "name": "On Duty English", "url": "https://ondutyenglish.com"}, "video": {"@type": "VideoObject", "name": "8 English Lines That Make a Nurse Handover Work", "description": "Eight lines for handing over a patient at the end of a shift, each with the reason it works and the weaker version it replaces. Listen, then say each one out loud.", "thumbnailUrl": "https://i.ytimg.com/vi/JVXyDQwe2BA/maxresdefault.jpg", "contentUrl": "https://www.youtube.com/watch?v=JVXyDQwe2BA", "embedUrl": "https://www.youtube.com/embed/JVXyDQwe2BA"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What do you say to ordering by risk, not by bed number?", "acceptedAnswer": {"@type": "Answer", "text": "Say: “I will start with the one I am most worried about.” — The person listening is sharpest in the first thirty seconds. Bed order spends that on whoever happens to be nearest the door. Going in order of worry spends it on the patient it matters for."}}, {"@type": "Question", "name": "What do you say to placing the patient in one breath?", "acceptedAnswer": {"@type": "Answer", "text": "Say: “Bay three, Mrs Okafor, day two after surgery.” — Three facts: where, who, how far along. Your colleague needs somewhere to put everything that follows. This builds the shelf before you start loading it."}}, {"@type": "Question", "name": "What do you say to selecting the background instead of reciting it?", "acceptedAnswer": {"@type": "Answer", "text": "Say: “The part of her history you need tonight is this.” — Background is the only step with no natural end. It is where handovers drown. Naming the part that matters stops it, and tells your colleague to listen again."}}, {"@type": "Question", "name": "What do you say to committing to a judgement?", "acceptedAnswer": {"@type": "Answer", "text": "Say: “My assessment is that she is not settling.” — You watched her for twelve hours. Your judgement is the most valuable thing you own. Hand over only numbers and the next nurse starts twelve hours behind you."}}, {"@type": "Question", "name": "What do you say to asking, rather than hoping?", "acceptedAnswer": {"@type": "Answer", "text": "Say: “What I need from you this shift is this.” — Keep an eye on her is not a task. It cannot be written down. It cannot be handed on again. Nobody can tell you later whether it was done."}}, {"@type": "Question", "name": "What do you say to naming the gap out loud?", "acceptedAnswer": {"@type": "Answer", "text": "Say: “I have not managed to do her four o'clock checks.” — The job you name becomes theirs. The job you leave unsaid stays yours, and stays undone. Saying it costs four seconds. Nobody was ever thought less of for it."}}, {"@type": "Question", "name": "What do you say to a trigger and an action, together?", "acceptedAnswer": {"@type": "Answer", "text": "Say: “If her pain goes above six, she needs a doctor, not more tablets.” — Worse is not a number. Two nurses will draw that line in two different places. Give a trigger they can measure, and the action that goes with it."}}, {"@type": "Question", "name": "What do you say to making the transfer explicit?", "acceptedAnswer": {"@type": "Answer", "text": "Say: “She is yours from now. What do you need from me before I go?” — A handover fails at the seam. Until somebody says it out loud, both nurses can walk away believing the other one is still watching. Saying it also opens the last door for a question."}}]}</script>
 <style>
   :root {
     --bg:#060A24; --card:#0D1331; --text:#F8F8FA; --muted:#9EA3BB;
@@ -93,7 +96,39 @@
   footer{margin-top:56px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08);
     color:var(--muted);font-size:13px}
   a{color:var(--cta)}
+  .watch{margin:8px 0 40px}
+  .watch .cta{display:inline-block;text-decoration:none;background:var(--cta);
+    color:#fff;border-radius:100px;padding:14px 26px;font-weight:800}
   @media (max-width:520px){ .phrase{flex-direction:column;gap:6px} }
+
+  /* ── PRINT ────────────────────────────────────────────────────────────────
+     §7.1: "no print stylesheet, under a heading that says 'Get the printable
+     version'." The page gated a printable sheet behind an email address and was
+     itself unprintable — dark background burning a cartridge, controls that do
+     nothing on paper, and every self-check answer hidden behind a button that
+     cannot be clicked. Nurses and receptionists genuinely print these.
+
+     Answers are REVEALED on paper, not hidden. Retrieval practice is a screen
+     behaviour; a printout is a reference card, and a reference card whose answers
+     are invisible is a blank sheet. */
+  @media print {
+    :root { --bg:#fff; --card:#fff; --text:#111; --muted:#444; }
+    body{background:#fff;color:#111;font-size:11pt}
+    .wrap{max-width:none;padding:0}
+    header{border-bottom:1px solid #ccc}
+    audio, button, textarea, form, .watch, #gate, #gatemsg, .noaudio { display:none !important; }
+    /* The gate section sells a printable version to someone already printing. */
+    .gate { display:none !important; }
+    .answer[hidden] { display:block !important; }
+    .answer { border-left:2px solid #999; padding-left:10px; }
+    .phrase, .drill { break-inside:avoid; page-break-inside:avoid;
+      border:1px solid #ddd; background:#fff; }
+    h2 { break-after:avoid; page-break-after:avoid; }
+    a { color:#111; text-decoration:underline; }
+    /* A printed link is useless unless it says where it goes. */
+    a[href^="http"]::after { content:" (" attr(href) ")"; font-size:9pt; color:#555; }
+    footer::after { content:" · ondutyenglish.com/practice/medical-the-handover/"; }
+  }
 </style>
 </head>
 <body>
@@ -103,7 +138,12 @@
     <h1>8 English Lines That Make a Nurse Handover Work</h1>
     <p class="intro">Eight lines for handing over a patient at the end of a shift, each with the reason it works and the weaker version it replaces. Listen, then say each one out loud.</p>
   </header>
-
+  
+  <div class="watch">
+    <a class="cta" href="https://www.youtube.com/watch?v=JVXyDQwe2BA"
+       target="_blank" rel="noopener">Watch the lesson</a>
+    <p class="fine">Eight lines, in the situation they belong to. About seven minutes.</p>
+  </div>
   <h2>The eight phrases</h2>
   <p class="sub">Listen, then say each one out loud before you move on.</p>
   
