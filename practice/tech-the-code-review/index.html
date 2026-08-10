@@ -101,6 +101,62 @@
     color:#fff;border-radius:100px;padding:14px 26px;font-weight:800}
   @media (max-width:520px){ .phrase{flex-direction:column;gap:6px} }
 
+  /* ── Course mechanics ─────────────────────────────────────────────────── */
+  .meter{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+    padding:10px 20px;background:rgba(6,10,36,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;font-weight:700}
+  .meter .bar{flex:1;height:6px;border-radius:100px;background:rgba(255,255,255,.12);
+    overflow:hidden}
+  .meter .bar i{display:block;height:100%;width:0;background:var(--lane);
+    border-radius:100px;transition:width .35s ease}
+  .obj{background:var(--card);border-radius:16px;padding:24px;margin:0 0 28px;
+    border:1px solid rgba(255,255,255,.08)}
+  .objlist{list-style:decimal;padding-left:22px;margin:0;counter-reset:none}
+  .objlist li{margin:0 0 8px;padding-left:4px}
+  .obj.bookend{margin-top:48px}
+  .conf{background:var(--card);border-radius:16px;padding:24px;margin:0 0 32px;
+    border-left:4px solid var(--accent)}
+  .clabel{color:var(--muted);font-size:12px;font-weight:800;letter-spacing:.12em;
+    text-transform:uppercase;margin:0 0 8px}
+  .cstate{font-size:19px;font-weight:700;margin:0 0 16px;line-height:1.4}
+  .scale{display:flex;gap:8px;flex-wrap:wrap}
+  .pt{flex:1 1 92px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.14);
+    color:var(--text);border-radius:12px;padding:10px 6px;font:inherit;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:3px}
+  .pt .n{font-size:18px;font-weight:800}
+  .pt .lb{font-size:11px;color:var(--muted);text-align:center;line-height:1.25}
+  .pt[aria-pressed=true]{background:var(--accent);border-color:transparent}
+  .pt[aria-pressed=true] .lb{color:rgba(255,255,255,.85)}
+  .situation{background:var(--card);border-radius:14px;padding:20px;margin:0 0 20px;
+    border-left:4px solid var(--lane)}
+  .situation p{margin:0;font-size:17px;line-height:1.65}
+  .situation video.setup,.situation img.setup{width:100%;height:auto;border-radius:10px;
+    margin:0 0 14px;display:block;aspect-ratio:16/9;object-fit:cover;
+    background:rgba(255,255,255,.04)}
+  .deck{list-style:none;padding:0;counter-reset:ab}
+  .ab-item{background:var(--card);border-radius:14px;padding:18px 20px;margin:0 0 12px;
+    counter-increment:ab}
+  .ask{margin:0 0 12px;font-weight:700}
+  .ask::before{content:counter(ab) ". ";color:var(--lane);font-weight:800}
+  .abrow{display:flex;flex-direction:column;gap:8px}
+  button.ab{display:flex;gap:10px;align-items:flex-start;text-align:left;
+    background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.14);color:var(--text);
+    border-radius:12px;padding:13px 15px;font:inherit;font-size:15px;cursor:pointer}
+  button.ab:hover:not([disabled]){border-color:var(--accent)}
+  button.ab .tag{font-weight:800;color:var(--lane);min-width:18px}
+  button.ab[data-picked=yes]{border-color:var(--accent);background:rgba(37,71,208,.2)}
+  /* The right answer is marked on reveal whether or not it was chosen — the
+     learner has to see WHICH line was the strong one, not merely whether they
+     were right. A tick with no target teaches nothing. */
+  button.ab[data-right=yes]{border-color:#2ecc71;background:rgba(46,204,113,.14)}
+  button.ab[disabled]{cursor:default;opacity:.95}
+  .ab-reveal{margin-top:14px}
+  .verdict{margin:0 0 10px;font-weight:800}
+  .sayit{margin:10px 0 4px;font-size:17px;font-weight:700}
+  .sayit span{color:var(--cta);font-weight:800;font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;margin-right:8px}
+  .tick{color:#2ecc71;font-weight:800;margin-left:8px}
+
   /* ── PRINT ────────────────────────────────────────────────────────────────
      §7.1: "no print stylesheet, under a heading that says 'Get the printable
      version'." The page gated a printable sheet behind an email address and was
@@ -121,6 +177,17 @@
     .gate { display:none !important; }
     .answer[hidden] { display:block !important; }
     .answer { border-left:2px solid #999; padding-left:10px; }
+    /* Same rule as .answer: on paper a hidden reveal is a blank box. The A/B
+       buttons print as plain lines, and the strong one is marked, because a
+       printed reference card has no way to record a choice. */
+    .ab-reveal[hidden] { display:block !important; }
+    .meter, .scale, video.setup { display:none !important; }
+    button.ab { border:1px solid #ddd !important; background:#fff !important;
+      color:#111 !important; padding:6px 8px; }
+    button.ab[data-right=yes] { border-color:#111 !important; font-weight:700; }
+    .conf { border-left:2px solid #999; }
+    .obj, .situation, .ab-item { break-inside:avoid; page-break-inside:avoid;
+      border:1px solid #ddd; background:#fff; }
     .phrase, .drill { break-inside:avoid; page-break-inside:avoid;
       border:1px solid #ddd; background:#fff; }
     h2 { break-after:avoid; page-break-after:avoid; }
@@ -132,6 +199,13 @@
 </style>
 </head>
 <body>
+<!-- The meter counts things the learner DID — choices made, drills revealed, the
+     two confidence answers — not sections scrolled past. A progress bar that fills
+     as you scroll measures the scrollbar. -->
+<div class="meter" id="meter" hidden>
+  <div class="bar"><i id="barfill"></i></div>
+  <span id="barpct">0%</span>
+</div>
 <div class="wrap">
   <header>
     <p class="kicker">Tech &amp; Programmer English · Practice</p>
@@ -139,8 +213,14 @@
     <p class="intro">Eight lines for a code review: four for writing one and four for answering one. Each carries the reason it works and the weaker version most people reach for instead.</p>
   </header>
   
+  
+
+  
+
+  
   <h2>The eight phrases</h2>
-  <p class="sub">Listen, then say each one out loud before you move on.</p>
+  <p class="sub">The same eight lines, now with the
+  pronunciation and the reason each one works. Listen, then say each out loud.</p>
   
       <article class="phrase">
         <div class="idx">1<span>/8</span></div>
@@ -345,6 +425,7 @@ Which of the four steps do people drop first under that pressure, and which line
 The comment isn&#x27;t about your change. It&#x27;s about you, and it&#x27;s sitting in a thread the whole team can read.
 
 Two lines from this lesson still work here. Can you remember which, and how you&#x27;d keep the thread about the change?</p></div></div>
+  
 
   <div class="gate">
     <h2 style="margin-top:0">Get the printable version</h2>
@@ -357,6 +438,8 @@ Two lines from this lesson still work here. Can you remember which, and how you&
     </form>
     <p class="fine" id="gatemsg"></p>
   </div>
+
+  
 
   <footer>
     Written and produced by On Duty English ·
@@ -377,25 +460,139 @@ Two lines from this lesson still work here. Can you remember which, and how you&
   var KEY = 'ode:tech-the-code-review';
   var saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+  function persist() {
+    try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+  }
   document.querySelectorAll('textarea').forEach(function (t) {
     var i = t.getAttribute('data-i');
     if (saved[i]) t.value = saved[i];
     t.addEventListener('input', function () {
       saved[i] = t.value;
-      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+      persist();
     });
   });
+
+  // ── Progress ────────────────────────────────────────────────────────────
+  // Denominator is what there is TO do on this page, counted from the DOM rather
+  // than written down, so a lesson with six phrases cannot report 8 items.
+  var N_AB = document.querySelectorAll('.ab-item').length;
+  var N_DRILL = document.querySelectorAll('.drill').length;
+  var N_CONF = document.querySelectorAll('.conf').length;
+  var TOTAL = N_AB + N_DRILL + N_CONF;
+  saved.done = saved.done || {};
+  function markDone(id) { saved.done[id] = 1; persist(); paint(); }
+  function paint() {
+    if (!TOTAL) return;
+    var n = Object.keys(saved.done).length;
+    var pct = Math.min(100, Math.round(n * 100 / TOTAL));
+    var m = document.getElementById('meter');
+    m.hidden = false;
+    document.getElementById('barfill').style.width = pct + '%';
+    document.getElementById('barpct').textContent = pct + '%';
+  }
+
+  // ── The A/B contrast: commit, THEN reveal ───────────────────────────────
+  // The reveal is gated on a click and cannot be reached any other way. This is
+  // the whole mechanic: the reference build printed its question and its answer
+  // on the same card face, so the learner read both having committed to nothing.
+  document.querySelectorAll('button.ab').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var n = btn.getAttribute('data-deck');
+      var item = document.querySelector('.ab-item[data-deck="' + n + '"]');
+      if (item.getAttribute('data-answered')) return;
+      item.setAttribute('data-answered', 'yes');
+      var right = btn.getAttribute('data-correct') === '1';
+      btn.setAttribute('data-picked', 'yes');
+      item.querySelectorAll('button.ab').forEach(function (b) {
+        b.disabled = true;
+        // Mark the strong line regardless of what was picked.
+        if (b.getAttribute('data-correct') === '1') b.setAttribute('data-right', 'yes');
+      });
+      // A wrong answer is never a dead end and never a retry-until-right loop:
+      // it shows the same `why` a right answer shows. A gate you can rattle until
+      // it opens teaches button-clicking, which is the defect this deck replaces.
+      document.getElementById('v' + n).textContent = right
+        ? 'Yes — that is the one.'
+        : 'Not that one. Here is what the other line does instead.';
+      document.getElementById('ab' + n).hidden = false;
+      saved['ab' + n] = right ? 1 : 0;
+      markDone('ab' + n);
+    });
+  });
+
+  // ── The confidence bracket ──────────────────────────────────────────────
+  // Self-reported confidence is a WEAK PROXY for competence, and a good lesson
+  // can legitimately push it DOWN by revealing difficulty the learner had not
+  // noticed. Read it beside drill completion; never optimise for it. It is a
+  // signal, not a score — and it is the first number on this channel that speaks
+  // to the editorial position rather than to the algorithm (CTR is structurally
+  // unfetchable: impressions and CTR are not YouTube Analytics API metrics).
+  document.querySelectorAll('button.pt').forEach(function (b) {
+    var phase = b.getAttribute('data-phase');
+    if (String(saved[phase]) === b.getAttribute('data-v')) b.setAttribute('aria-pressed', 'true');
+    b.addEventListener('click', function () {
+      var v = parseInt(b.getAttribute('data-v'), 10);
+      saved[phase] = v;
+      document.querySelectorAll('button.pt[data-phase="' + phase + '"]').forEach(
+        function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      markDone('conf-' + phase);
+      showDelta();
+    });
+  });
+  function showDelta() {
+    var el = document.getElementById('delta');
+    if (!el || saved.pre == null || saved.post == null) return;
+    var d = saved.post - saved.pre;
+    el.textContent = d > 0
+      ? 'Up ' + d + ' since you started.'
+      : (d === 0
+         ? 'The same as when you started.'
+         : 'Down ' + Math.abs(d) + '. That is a normal thing to happen — a lesson '
+           + 'that shows you a harder version of a job you thought you had can '
+           + 'lower how sure you feel about it.');
+  }
+  document.querySelectorAll('button.reveal').forEach(function (b) {
+    b.addEventListener('click', function () { markDone('drill' + b.getAttribute('data-i')); });
+  });
+
+  // Replay what was already done on a previous visit.
+  Object.keys(saved.done || {}).forEach(function (id) {
+    if (id.indexOf('ab') === 0) {
+      var n = id.slice(2);
+      var item = document.querySelector('.ab-item[data-deck="' + n + '"]');
+      if (!item) return;
+      item.setAttribute('data-answered', 'yes');
+      item.querySelectorAll('button.ab').forEach(function (b) {
+        b.disabled = true;
+        if (b.getAttribute('data-correct') === '1') b.setAttribute('data-right', 'yes');
+      });
+      document.getElementById('v' + n).textContent = saved[id] === 1
+        ? 'Yes — that is the one.'
+        : 'Not that one. Here is what the other line does instead.';
+      document.getElementById('ab' + n).hidden = false;
+    }
+  });
+  showDelta();
+  paint();
   document.getElementById('gate').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var f = new FormData(ev.target);
     var msg = document.getElementById('gatemsg');
     msg.textContent = 'Sending...';
-    fetch('/api/trpc/subscribe.create?batch=1', {
+    // The key is OMITTED when there is no first name, never sent as null. The
+    // procedure's input is `z.string().max(120).optional()`, and zod .optional()
+    // admits `undefined` only — a literal null is `invalid_type` and rejects the
+    // whole submission, including a perfectly good email. Verified against the
+    // shipped schema (zod 4.1.12), not assumed.
+    var payload = {
+      email: f.get('email'),
+      lane: 'E', source: 'practice:tech-the-code-review'
+    };
+    var fn = (f.get('firstName') || '').trim();
+    if (fn) payload.firstName = fn;
+    fetch('https://ondutyenglish.com/api/trpc/subscribe.join?batch=1', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({0:{json:{
-        email: f.get('email'), firstName: f.get('firstName') || null,
-        lane: 'E', source: 'practice:tech-the-code-review'
-      }}})
+      body: JSON.stringify({0:{json: payload}})
     }).then(function (r) {
       msg.textContent = r.ok
         ? 'Sent. Check your inbox for the printable sheet.'

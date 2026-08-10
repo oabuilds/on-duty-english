@@ -101,6 +101,62 @@
     color:#fff;border-radius:100px;padding:14px 26px;font-weight:800}
   @media (max-width:520px){ .phrase{flex-direction:column;gap:6px} }
 
+  /* ── Course mechanics ─────────────────────────────────────────────────── */
+  .meter{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+    padding:10px 20px;background:rgba(6,10,36,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;font-weight:700}
+  .meter .bar{flex:1;height:6px;border-radius:100px;background:rgba(255,255,255,.12);
+    overflow:hidden}
+  .meter .bar i{display:block;height:100%;width:0;background:var(--lane);
+    border-radius:100px;transition:width .35s ease}
+  .obj{background:var(--card);border-radius:16px;padding:24px;margin:0 0 28px;
+    border:1px solid rgba(255,255,255,.08)}
+  .objlist{list-style:decimal;padding-left:22px;margin:0;counter-reset:none}
+  .objlist li{margin:0 0 8px;padding-left:4px}
+  .obj.bookend{margin-top:48px}
+  .conf{background:var(--card);border-radius:16px;padding:24px;margin:0 0 32px;
+    border-left:4px solid var(--accent)}
+  .clabel{color:var(--muted);font-size:12px;font-weight:800;letter-spacing:.12em;
+    text-transform:uppercase;margin:0 0 8px}
+  .cstate{font-size:19px;font-weight:700;margin:0 0 16px;line-height:1.4}
+  .scale{display:flex;gap:8px;flex-wrap:wrap}
+  .pt{flex:1 1 92px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.14);
+    color:var(--text);border-radius:12px;padding:10px 6px;font:inherit;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:3px}
+  .pt .n{font-size:18px;font-weight:800}
+  .pt .lb{font-size:11px;color:var(--muted);text-align:center;line-height:1.25}
+  .pt[aria-pressed=true]{background:var(--accent);border-color:transparent}
+  .pt[aria-pressed=true] .lb{color:rgba(255,255,255,.85)}
+  .situation{background:var(--card);border-radius:14px;padding:20px;margin:0 0 20px;
+    border-left:4px solid var(--lane)}
+  .situation p{margin:0;font-size:17px;line-height:1.65}
+  .situation video.setup,.situation img.setup{width:100%;height:auto;border-radius:10px;
+    margin:0 0 14px;display:block;aspect-ratio:16/9;object-fit:cover;
+    background:rgba(255,255,255,.04)}
+  .deck{list-style:none;padding:0;counter-reset:ab}
+  .ab-item{background:var(--card);border-radius:14px;padding:18px 20px;margin:0 0 12px;
+    counter-increment:ab}
+  .ask{margin:0 0 12px;font-weight:700}
+  .ask::before{content:counter(ab) ". ";color:var(--lane);font-weight:800}
+  .abrow{display:flex;flex-direction:column;gap:8px}
+  button.ab{display:flex;gap:10px;align-items:flex-start;text-align:left;
+    background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.14);color:var(--text);
+    border-radius:12px;padding:13px 15px;font:inherit;font-size:15px;cursor:pointer}
+  button.ab:hover:not([disabled]){border-color:var(--accent)}
+  button.ab .tag{font-weight:800;color:var(--lane);min-width:18px}
+  button.ab[data-picked=yes]{border-color:var(--accent);background:rgba(37,71,208,.2)}
+  /* The right answer is marked on reveal whether or not it was chosen — the
+     learner has to see WHICH line was the strong one, not merely whether they
+     were right. A tick with no target teaches nothing. */
+  button.ab[data-right=yes]{border-color:#2ecc71;background:rgba(46,204,113,.14)}
+  button.ab[disabled]{cursor:default;opacity:.95}
+  .ab-reveal{margin-top:14px}
+  .verdict{margin:0 0 10px;font-weight:800}
+  .sayit{margin:10px 0 4px;font-size:17px;font-weight:700}
+  .sayit span{color:var(--cta);font-weight:800;font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;margin-right:8px}
+  .tick{color:#2ecc71;font-weight:800;margin-left:8px}
+
   /* ── PRINT ────────────────────────────────────────────────────────────────
      §7.1: "no print stylesheet, under a heading that says 'Get the printable
      version'." The page gated a printable sheet behind an email address and was
@@ -121,6 +177,17 @@
     .gate { display:none !important; }
     .answer[hidden] { display:block !important; }
     .answer { border-left:2px solid #999; padding-left:10px; }
+    /* Same rule as .answer: on paper a hidden reveal is a blank box. The A/B
+       buttons print as plain lines, and the strong one is marked, because a
+       printed reference card has no way to record a choice. */
+    .ab-reveal[hidden] { display:block !important; }
+    .meter, .scale, video.setup { display:none !important; }
+    button.ab { border:1px solid #ddd !important; background:#fff !important;
+      color:#111 !important; padding:6px 8px; }
+    button.ab[data-right=yes] { border-color:#111 !important; font-weight:700; }
+    .conf { border-left:2px solid #999; }
+    .obj, .situation, .ab-item { break-inside:avoid; page-break-inside:avoid;
+      border:1px solid #ddd; background:#fff; }
     .phrase, .drill { break-inside:avoid; page-break-inside:avoid;
       border:1px solid #ddd; background:#fff; }
     h2 { break-after:avoid; page-break-after:avoid; }
@@ -132,6 +199,13 @@
 </style>
 </head>
 <body>
+<!-- The meter counts things the learner DID — choices made, drills revealed, the
+     two confidence answers — not sections scrolled past. A progress bar that fills
+     as you scroll measures the scrollbar. -->
+<div class="meter" id="meter" hidden>
+  <div class="bar"><i id="barfill"></i></div>
+  <span id="barpct">0%</span>
+</div>
 <div class="wrap">
   <header>
     <p class="kicker">Hospitality &amp; Service English · Practice</p>
@@ -139,13 +213,117 @@
     <p class="intro">Eight phrases for the moment a guest complaint becomes serious. These are not vocabulary words. They are the exact sentences a senior front desk professional uses, in the order they use them.</p>
   </header>
   
+  <section class="obj">
+    <h2 style="margin-top:0">What you will be able to do</h2>
+    <p class="sub">By the end of this page.</p>
+    <ol class="objlist"><li>Identify which of two replies a senior professional would give, and say why</li><li>Explain why apologising twice makes an angry guest angrier, not calmer</li><li>Produce all eight lines from the situation alone, without reading them</li><li>Evaluate your own wording mid-complaint and change it before the guest asks for your manager</li></ol>
+  </section>
+  
+  <section class="conf" id="confpre">
+    <p class="clabel">Before you start</p>
+    <p class="cstate">“I know what to say when a guest is furious and asks for my manager.”</p>
+    <div class="scale" data-phase="pre" role="group" aria-label="Rate before starting">
+      <button type="button" class="pt" data-phase="pre" data-v="1"><span class="n">1</span><span class="lb">Not at all</span></button><button type="button" class="pt" data-phase="pre" data-v="2"><span class="n">2</span><span class="lb">A little</span></button><button type="button" class="pt" data-phase="pre" data-v="3"><span class="n">3</span><span class="lb">Somewhat</span></button><button type="button" class="pt" data-phase="pre" data-v="4"><span class="n">4</span><span class="lb">Mostly</span></button><button type="button" class="pt" data-phase="pre" data-v="5"><span class="n">5</span><span class="lb">Completely</span></button>
+    </div>
+    <p class="fine">Nobody sees this but you. It is stored on this device.</p>
+  </section>
+
+  
+  <h2>Before you read anything</h2>
+  <p class="sub">One shift, eight decisions. You have not been
+  taught these yet — that is the point. Commit to an answer, then find out.</p>
+  <div class="situation"><img class="setup" src="media/setup.jpg" loading="lazy" decoding="async" alt="It is eleven at night. A guest is at your desk holding a confirmation email for a room that was given away four hours ago, and the hotel is full. He has been travelling since six this morning, and he has just asked you twice whether you understand what you have done to his evening."><p>It is eleven at night. A guest is at your desk holding a confirmation email for a room that was given away four hours ago, and the hotel is full. He has been travelling since six this morning, and he has just asked you twice whether you understand what you have done to his evening.</p></div>
+  <ol class="deck">
+      <li class="ab-item" data-deck="0">
+        <p class="ask">Which one does a senior professional say?</p>
+        <div class="abrow"><button type="button" class="ab" data-deck="0" data-correct="0"><span class="tag">A</span>I am so sorry, I am so sorry.</button><button type="button" class="ab" data-deck="0" data-correct="1"><span class="tag">B</span>That should not have happened.</button></div>
+        <div class="ab-reveal" id="ab0" hidden>
+          <p class="verdict" id="v0"></p>
+          <div class="why"><strong>Why the other one lands badly.</strong> You are agreeing with the guest, not only saying sorry. Saying sorry again and again can sound weak. When you agree, the guest feels you are on their side.</div>
+          <p class="sayit"><span>Say it</span> That should not have happened.</p>
+          <p class="eg">That should not have happened, and I understand why you are upset.</p>
+        </div>
+      </li>
+      <li class="ab-item" data-deck="1">
+        <p class="ask">Which one does a senior professional say?</p>
+        <div class="abrow"><button type="button" class="ab" data-deck="1" data-correct="1"><span class="tag">A</span>Let me see what I can do right now.</button><button type="button" class="ab" data-deck="1" data-correct="0"><span class="tag">B</span>I will try.</button></div>
+        <div class="ab-reveal" id="ab1" hidden>
+          <p class="verdict" id="v1"></p>
+          <div class="why"><strong>Why the other one lands badly.</strong> The important words are right now. I will try sounds like no. When you say right now, the guest knows you have already started, so they stop repeating themselves.</div>
+          <p class="sayit"><span>Say it</span> Let me see what I can do right now.</p>
+          <p class="eg">Let me see what I can do right now, Mister Adeyemi.</p>
+        </div>
+      </li>
+      <li class="ab-item" data-deck="2">
+        <p class="ask">Which one does a senior professional say?</p>
+        <div class="abrow"><button type="button" class="ab" data-deck="2" data-correct="0"><span class="tag">A</span>I will try to sort something out.</button><button type="button" class="ab" data-deck="2" data-correct="1"><span class="tag">B</span>I am going to fix this for you tonight.</button></div>
+        <div class="ab-reveal" id="ab2" hidden>
+          <p class="verdict" id="v2"></p>
+          <div class="why"><strong>Why the other one lands badly.</strong> You say who will fix it, and when. I am going to is a promise. I will try is not. Guests ask for a manager when nobody takes the job, so this sentence keeps it with you.</div>
+          <p class="sayit"><span>Say it</span> I am going to fix this for you tonight.</p>
+          <p class="eg">I am going to fix this for you tonight. Give me two minutes.</p>
+        </div>
+      </li>
+      <li class="ab-item" data-deck="3">
+        <p class="ask">Which one does a senior professional say?</p>
+        <div class="abrow"><button type="button" class="ab" data-deck="3" data-correct="1"><span class="tag">A</span>Here is what I can offer you.</button><button type="button" class="ab" data-deck="3" data-correct="0"><span class="tag">B</span>Unfortunately, there is nothing available.</button></div>
+        <div class="ab-reveal" id="ab3" hidden>
+          <p class="verdict" id="v3"></p>
+          <div class="why"><strong>Why the other one lands badly.</strong> Now you move from the problem to the answer. If you begin with unfortunately, the guest waits for bad news. If you begin with here is, they listen.</div>
+          <p class="sayit"><span>Say it</span> Here is what I can offer you.</p>
+          <p class="eg">Here is what I can offer you, and please tell me if it does not work.</p>
+        </div>
+      </li>
+      <li class="ab-item" data-deck="4">
+        <p class="ask">Which one does a senior professional say?</p>
+        <div class="abrow"><button type="button" class="ab" data-deck="4" data-correct="0"><span class="tag">A</span>I could maybe move you to another room?</button><button type="button" class="ab" data-deck="4" data-correct="1"><span class="tag">B</span>I have moved you to a room on the executive floor.</button></div>
+        <div class="ab-reveal" id="ab4" hidden>
+          <p class="verdict" id="v4"></p>
+          <div class="why"><strong>Why the other one lands badly.</strong> Say it is done, not that it might happen. A question sounds like you are not sure. I have moved you tells the guest the problem is already finished.</div>
+          <p class="sayit"><span>Say it</span> I have moved you to a room on the executive floor.</p>
+          <p class="eg">I have moved you to a room on the executive floor at no extra charge.</p>
+        </div>
+      </li>
+      <li class="ab-item" data-deck="5">
+        <p class="ask">Which one does a senior professional say?</p>
+        <div class="abrow"><button type="button" class="ab" data-deck="5" data-correct="0"><span class="tag">A</span>It was the system, not me.</button><button type="button" class="ab" data-deck="5" data-correct="1"><span class="tag">B</span>I will take personal responsibility for this.</button></div>
+        <div class="ab-reveal" id="ab5" hidden>
+          <p class="verdict" id="v5"></p>
+          <div class="why"><strong>Why the other one lands badly.</strong> Do not blame the computer. It may be true, but it does not help. The guest wants a person, not a reason. This sentence usually stops a guest asking for a manager.</div>
+          <p class="sayit"><span>Say it</span> I will take personal responsibility for this.</p>
+          <p class="eg">I will take personal responsibility for this until you are settled.</p>
+        </div>
+      </li>
+      <li class="ab-item" data-deck="6">
+        <p class="ask">Which one does a senior professional say?</p>
+        <div class="abrow"><button type="button" class="ab" data-deck="6" data-correct="1"><span class="tag">A</span>Let me get my manager so we can sort this out properly.</button><button type="button" class="ab" data-deck="6" data-correct="0"><span class="tag">B</span>I am not allowed to do that.</button></div>
+        <div class="ab-reveal" id="ab6" hidden>
+          <p class="verdict" id="v6"></p>
+          <div class="why"><strong>Why the other one lands badly.</strong> Asking your manager is not losing. Said this way, it sounds like you are getting more help for the guest. The word properly promises a better answer, not just another person.</div>
+          <p class="sayit"><span>Say it</span> Let me get my manager so we can sort this out properly.</p>
+          <p class="eg">Let me get my manager so we can sort this out properly for you.</p>
+        </div>
+      </li>
+      <li class="ab-item" data-deck="7">
+        <p class="ask">Which one does a senior professional say?</p>
+        <div class="abrow"><button type="button" class="ab" data-deck="7" data-correct="1"><span class="tag">A</span>Is there anything else I can put right for you?</button><button type="button" class="ab" data-deck="7" data-correct="0"><span class="tag">B</span>Is that okay?</button></div>
+        <div class="ab-reveal" id="ab7" hidden>
+          <p class="verdict" id="v7"></p>
+          <div class="why"><strong>Why the other one lands badly.</strong> Put right sounds more professional than fix. Is that okay makes a guest say yes even when they are not happy. This question asks if anything is still wrong.</div>
+          <p class="sayit"><span>Say it</span> Is there anything else I can put right for you?</p>
+          <p class="eg">Is there anything else I can put right for you this evening?</p>
+        </div>
+      </li></ol>
+
+  
   <div class="watch">
     <a class="cta" href="https://www.youtube.com/watch?v=SPMGgwoPkCo"
        target="_blank" rel="noopener">Watch the lesson</a>
     <p class="fine">Eight lines, in the situation they belong to. About seven minutes.</p>
   </div>
   <h2>The eight phrases</h2>
-  <p class="sub">Listen, then say each one out loud before you move on.</p>
+  <p class="sub">The same eight lines, now with the
+  pronunciation and the reason each one works. Listen, then say each out loud.</p>
   
       <article class="phrase">
         <div class="idx">1<span>/8</span></div>
@@ -350,6 +528,15 @@ Nothing here is your hotel&#x27;s fault. Which of the four steps still applies, 
 A guest is angry about something that is genuinely not your hotel&#x27;s fault, and they are becoming rude to you personally.
 
 Two phrases from this lesson still work here. One of them protects you while still serving the guest. Can you remember which?</p></div></div>
+  
+  <section class="conf" id="confpost">
+    <p class="clabel">Now you have worked through it</p>
+    <p class="cstate">“I know what to say when a guest is furious and asks for my manager.”</p>
+    <div class="scale" data-phase="post" role="group" aria-label="Rate after finishing">
+      <button type="button" class="pt" data-phase="post" data-v="1"><span class="n">1</span><span class="lb">Not at all</span></button><button type="button" class="pt" data-phase="post" data-v="2"><span class="n">2</span><span class="lb">A little</span></button><button type="button" class="pt" data-phase="post" data-v="3"><span class="n">3</span><span class="lb">Somewhat</span></button><button type="button" class="pt" data-phase="post" data-v="4"><span class="n">4</span><span class="lb">Mostly</span></button><button type="button" class="pt" data-phase="post" data-v="5"><span class="n">5</span><span class="lb">Completely</span></button>
+    </div>
+    <p class="fine" id="delta"></p>
+  </section>
 
   <div class="gate">
     <h2 style="margin-top:0">Get the printable version</h2>
@@ -362,6 +549,13 @@ Two phrases from this lesson still work here. One of them protects you while sti
     </form>
     <p class="fine" id="gatemsg"></p>
   </div>
+
+  
+  <section class="obj bookend">
+    <h2 style="margin-top:0">What you can do now</h2>
+    <p class="sub">The same four, to check yourself against.</p>
+    <ol class="objlist"><li>Identify which of two replies a senior professional would give, and say why</li><li>Explain why apologising twice makes an angry guest angrier, not calmer</li><li>Produce all eight lines from the situation alone, without reading them</li><li>Evaluate your own wording mid-complaint and change it before the guest asks for your manager</li></ol>
+  </section>
 
   <footer>
     Written and produced by On Duty English ·
@@ -382,25 +576,139 @@ Two phrases from this lesson still work here. One of them protects you while sti
   var KEY = 'ode:hospitality-the-complaint';
   var saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+  function persist() {
+    try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+  }
   document.querySelectorAll('textarea').forEach(function (t) {
     var i = t.getAttribute('data-i');
     if (saved[i]) t.value = saved[i];
     t.addEventListener('input', function () {
       saved[i] = t.value;
-      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+      persist();
     });
   });
+
+  // ── Progress ────────────────────────────────────────────────────────────
+  // Denominator is what there is TO do on this page, counted from the DOM rather
+  // than written down, so a lesson with six phrases cannot report 8 items.
+  var N_AB = document.querySelectorAll('.ab-item').length;
+  var N_DRILL = document.querySelectorAll('.drill').length;
+  var N_CONF = document.querySelectorAll('.conf').length;
+  var TOTAL = N_AB + N_DRILL + N_CONF;
+  saved.done = saved.done || {};
+  function markDone(id) { saved.done[id] = 1; persist(); paint(); }
+  function paint() {
+    if (!TOTAL) return;
+    var n = Object.keys(saved.done).length;
+    var pct = Math.min(100, Math.round(n * 100 / TOTAL));
+    var m = document.getElementById('meter');
+    m.hidden = false;
+    document.getElementById('barfill').style.width = pct + '%';
+    document.getElementById('barpct').textContent = pct + '%';
+  }
+
+  // ── The A/B contrast: commit, THEN reveal ───────────────────────────────
+  // The reveal is gated on a click and cannot be reached any other way. This is
+  // the whole mechanic: the reference build printed its question and its answer
+  // on the same card face, so the learner read both having committed to nothing.
+  document.querySelectorAll('button.ab').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var n = btn.getAttribute('data-deck');
+      var item = document.querySelector('.ab-item[data-deck="' + n + '"]');
+      if (item.getAttribute('data-answered')) return;
+      item.setAttribute('data-answered', 'yes');
+      var right = btn.getAttribute('data-correct') === '1';
+      btn.setAttribute('data-picked', 'yes');
+      item.querySelectorAll('button.ab').forEach(function (b) {
+        b.disabled = true;
+        // Mark the strong line regardless of what was picked.
+        if (b.getAttribute('data-correct') === '1') b.setAttribute('data-right', 'yes');
+      });
+      // A wrong answer is never a dead end and never a retry-until-right loop:
+      // it shows the same `why` a right answer shows. A gate you can rattle until
+      // it opens teaches button-clicking, which is the defect this deck replaces.
+      document.getElementById('v' + n).textContent = right
+        ? 'Yes — that is the one.'
+        : 'Not that one. Here is what the other line does instead.';
+      document.getElementById('ab' + n).hidden = false;
+      saved['ab' + n] = right ? 1 : 0;
+      markDone('ab' + n);
+    });
+  });
+
+  // ── The confidence bracket ──────────────────────────────────────────────
+  // Self-reported confidence is a WEAK PROXY for competence, and a good lesson
+  // can legitimately push it DOWN by revealing difficulty the learner had not
+  // noticed. Read it beside drill completion; never optimise for it. It is a
+  // signal, not a score — and it is the first number on this channel that speaks
+  // to the editorial position rather than to the algorithm (CTR is structurally
+  // unfetchable: impressions and CTR are not YouTube Analytics API metrics).
+  document.querySelectorAll('button.pt').forEach(function (b) {
+    var phase = b.getAttribute('data-phase');
+    if (String(saved[phase]) === b.getAttribute('data-v')) b.setAttribute('aria-pressed', 'true');
+    b.addEventListener('click', function () {
+      var v = parseInt(b.getAttribute('data-v'), 10);
+      saved[phase] = v;
+      document.querySelectorAll('button.pt[data-phase="' + phase + '"]').forEach(
+        function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      markDone('conf-' + phase);
+      showDelta();
+    });
+  });
+  function showDelta() {
+    var el = document.getElementById('delta');
+    if (!el || saved.pre == null || saved.post == null) return;
+    var d = saved.post - saved.pre;
+    el.textContent = d > 0
+      ? 'Up ' + d + ' since you started.'
+      : (d === 0
+         ? 'The same as when you started.'
+         : 'Down ' + Math.abs(d) + '. That is a normal thing to happen — a lesson '
+           + 'that shows you a harder version of a job you thought you had can '
+           + 'lower how sure you feel about it.');
+  }
+  document.querySelectorAll('button.reveal').forEach(function (b) {
+    b.addEventListener('click', function () { markDone('drill' + b.getAttribute('data-i')); });
+  });
+
+  // Replay what was already done on a previous visit.
+  Object.keys(saved.done || {}).forEach(function (id) {
+    if (id.indexOf('ab') === 0) {
+      var n = id.slice(2);
+      var item = document.querySelector('.ab-item[data-deck="' + n + '"]');
+      if (!item) return;
+      item.setAttribute('data-answered', 'yes');
+      item.querySelectorAll('button.ab').forEach(function (b) {
+        b.disabled = true;
+        if (b.getAttribute('data-correct') === '1') b.setAttribute('data-right', 'yes');
+      });
+      document.getElementById('v' + n).textContent = saved[id] === 1
+        ? 'Yes — that is the one.'
+        : 'Not that one. Here is what the other line does instead.';
+      document.getElementById('ab' + n).hidden = false;
+    }
+  });
+  showDelta();
+  paint();
   document.getElementById('gate').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var f = new FormData(ev.target);
     var msg = document.getElementById('gatemsg');
     msg.textContent = 'Sending...';
-    fetch('/api/trpc/subscribe.create?batch=1', {
+    // The key is OMITTED when there is no first name, never sent as null. The
+    // procedure's input is `z.string().max(120).optional()`, and zod .optional()
+    // admits `undefined` only — a literal null is `invalid_type` and rejects the
+    // whole submission, including a perfectly good email. Verified against the
+    // shipped schema (zod 4.1.12), not assumed.
+    var payload = {
+      email: f.get('email'),
+      lane: 'D', source: 'practice:hospitality-the-complaint'
+    };
+    var fn = (f.get('firstName') || '').trim();
+    if (fn) payload.firstName = fn;
+    fetch('https://ondutyenglish.com/api/trpc/subscribe.join?batch=1', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({0:{json:{
-        email: f.get('email'), firstName: f.get('firstName') || null,
-        lane: 'D', source: 'practice:hospitality-the-complaint'
-      }}})
+      body: JSON.stringify({0:{json: payload}})
     }).then(function (r) {
       msg.textContent = r.ok
         ? 'Sent. Check your inbox for the printable sheet.'
