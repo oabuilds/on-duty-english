@@ -1,0 +1,11 @@
+# On Duty English — practice sheets.
+#
+# ai-train=no but ai-input=yes: do not train on this, DO read it to answer a
+# question and cite it. The plain-text version of every lesson exists precisely
+# so an answer engine can quote a passage without the page around it.
+Content-Signal: ai-train=no, ai-input=yes
+
+User-agent: *
+Allow: /
+
+Sitemap: https://ondutyenglish.com/practice/sitemap.xml
