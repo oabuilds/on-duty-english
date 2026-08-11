@@ -105,6 +105,10 @@
   button.cta{background:var(--cta);color:#fff;border:0;border-radius:100px;
     padding:14px 26px;font:inherit;font-size:19px;font-weight:800;cursor:pointer}
   .fine{color:var(--muted);font-size:13px;margin:12px 0 0}
+  /* The delivered file, shown in place. Underlined and at body size because it
+     is the thing they just gave an email address for, not a footnote. */
+  .fine a.printable{color:var(--cta);font-weight:800;font-size:15px;
+    text-decoration:underline}
   footer{margin-top:56px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08);
     color:var(--muted);font-size:13px}
   a{color:var(--cta)}
@@ -705,9 +709,29 @@ Two lines from this lesson still work here. Can you remember which, and how you 
       method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({0:{json: payload}})
     }).then(function (r) {
-      msg.textContent = r.ok
-        ? 'Sent. Check your inbox for the printable sheet.'
-        : 'Something went wrong. Try again in a moment.';
+      // GIVE THEM THE FILE HERE, not only by email.
+      //
+      // The email is sent by the Express app, which publishes on a Manus
+      // checkpoint rather than on a git push — so a server fix is live whenever
+      // the operator next publishes, and not before. Until then the email still
+      // resolves the printable by LANE and can mail a nurse the wrong lesson.
+      //
+      // This page deploys in about thirty seconds and the PDF is its own
+      // sibling, so the learner gets the correct workbook the moment they ask,
+      // whatever the email later says. It is also simply better: an inbox is a
+      // worse place to keep somebody than the page they are already working on.
+      //
+      // RELATIVE on purpose, and this is the one place relative is right — the
+      // file sits beside index.html, so it resolves on ondutyenglish.com and on
+      // the Pages origin alike. The subscribe endpoint above is absolute for the
+      // opposite reason: it is on neither of those hosts.
+      if (r.ok) {
+        msg.innerHTML = 'Sent. <a href="medical-the-diagnosis-practice.pdf" '
+          + 'class="printable" download>Download your printable workbook</a> '
+          + '— the next lesson follows by email.';
+      } else {
+        msg.textContent = 'Something went wrong. Try again in a moment.';
+      }
       // Only on r.ok. Counting attempts as conversions is how a broken endpoint
       // reports a healthy funnel — which is exactly the state this page was in
       // for its entire life until yesterday, posting to a procedure that did not
