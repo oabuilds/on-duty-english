@@ -39,6 +39,7 @@
   :root {
     --bg:#060A24; --card:#0D1331; --text:#F8F8FA; --muted:#9EA3BB;
     --accent:#2841B9; --cta:#F46622; --lane:#1D4ED8;
+    --ipa:#9AA5DC;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);
@@ -57,7 +58,9 @@
   .idx{font-weight:800;font-size:26px;color:var(--lane);min-width:52px}
   .idx span{color:var(--muted);font-size:14px;font-weight:600}
   .phrase h3{margin:0 0 4px;font-size:22px;font-weight:800}
-  .ipa{color:var(--accent);margin:0 0 2px;font-size:15px;
+  /* --ipa, not --accent. The raw accent measures 2.21:1 on the card and IPA is
+     the one line read character by character rather than by word shape. */
+  .ipa{color:var(--ipa);margin:0 0 2px;font-size:15px;
     font-family:"Arial Unicode MS",Arial,sans-serif}
   .fn{color:var(--muted);margin:0 0 12px;font-size:12px;font-weight:700;
     letter-spacing:.1em;text-transform:uppercase}
@@ -94,15 +97,20 @@
     border:1px solid rgba(255,255,255,.14);color:var(--text);border-radius:100px;
     padding:14px 20px;font:inherit}
   input:focus{outline:2px solid var(--cta);border-color:transparent}
+  /* 19px, not inherited 16px, and the reason is contrast rather than taste.
+     White on #F46622 measures 3.10:1 — under AA's 4.5:1 for body text, but AA
+     treats bold type at 18.66px+ as large and asks only 3:1 there. The brand's
+     CTA orange is locked to the live site, so the fix is the type size, not the
+     colour; a bigger tap target on a phone is the same change. */
   button.cta{background:var(--cta);color:#fff;border:0;border-radius:100px;
-    padding:14px 26px;font:inherit;font-weight:800;cursor:pointer}
+    padding:14px 26px;font:inherit;font-size:19px;font-weight:800;cursor:pointer}
   .fine{color:var(--muted);font-size:13px;margin:12px 0 0}
   footer{margin-top:56px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08);
     color:var(--muted);font-size:13px}
   a{color:var(--cta)}
   .watch{margin:8px 0 40px}
   .watch .cta{display:inline-block;text-decoration:none;background:var(--cta);
-    color:#fff;border-radius:100px;padding:14px 26px;font-weight:800}
+    color:#fff;border-radius:100px;padding:14px 26px;font-size:19px;font-weight:800}
   @media (max-width:520px){ .phrase{flex-direction:column;gap:6px} }
 
   /* ── Course mechanics ─────────────────────────────────────────────────── */
@@ -210,7 +218,11 @@
   <div class="bar"><i id="barfill"></i></div>
   <span id="barpct">0%</span>
 </div>
-<div class="wrap">
+<!-- <main>, not <div>. A screen-reader user tabbing in had no landmark to jump to,
+     so reaching the first phrase meant hearing the whole header every visit. The
+     audience for these sheets works shifts and studies on a phone; skipping the
+     furniture is not a nicety. -->
+<main class="wrap">
   <header>
     <p class="kicker">Engineering English · Practice</p>
     <h1>8 Engineering English Lines That Stop a Design Review Delay</h1>
@@ -447,18 +459,73 @@ Two lines from this lesson still work here, and one of them is something you alr
 
   <footer>
     Written and produced by On Duty English ·
-    <a href="https://ondutyenglish.com">ondutyenglish.com</a>
+    <a href="https://ondutyenglish.com">ondutyenglish.com</a> ·
+    <!-- text.md was reachable only from a <link rel=alternate> in the head, so no
+         human could ever open it and no click could ever be counted. It is the
+         ungated, quotable version an answer engine cites; a visible link is how it
+         gets linked to at all. -->
+    <a class="textver" href="text.md">Plain text version</a>
   </footer>
-</div>
+</main>
+<!-- Plausible: cookieless, no consent banner, already the site's analytics. This is
+     the SAME tag as the marketing app, deliberately — a funnel that cannot follow a
+     visitor from the home page to a lesson to a signup is three disconnected counts.
+     The shim queues events fired before the deferred script finishes loading; a fast
+     learner tapping the first A/B card beats the network otherwise. -->
+<script defer src="https://plausible.io/js/pa-DsS6BC4ytxnoINoZRkuNA.js"></script>
 <script>
+  window.plausible = window.plausible || function () { (plausible.q = plausible.q || []).push(arguments) };
+  plausible.init = plausible.init || function (i) { plausible.o = i || {} };
+  plausible.init();
+</script>
+<script>
+  // ── Instrumentation ─────────────────────────────────────────────────────
+  // FIRE-ONCE. Eight A/B cards from one learner would report as eight
+  // conversions, and on a channel with ten subscribers that is the difference
+  // between a signal and a fiction. The first commit is the one that answers
+  // "did they engage"; the rest is depth, carried on the completion event.
+  var SENT = {};
+  function ev(name, props) {
+    if (SENT[name]) return;
+    SENT[name] = 1;
+    try {
+      window.plausible(name, props
+        ? {props: Object.assign({lesson: 'engineering-the-technical-meeting', lane: 'A'}, props)}
+        : {props: {lesson: 'engineering-the-technical-meeting', lane: 'A'}});
+    } catch (e) {}
+  }
+
   document.querySelectorAll('button.reveal').forEach(function (b) {
     b.addEventListener('click', function () {
       var i = b.getAttribute('data-i');
       var a = document.getElementById('a' + i);
       a.hidden = !a.hidden;
       b.textContent = a.hidden ? 'Compare with a professional answer' : 'Hide';
+      if (!a.hidden) { ev('Course Start'); ev('Drill Revealed'); }
     });
   });
+
+  // Outbound and media. `Watch Clicked` is the one event that measures the course
+  // pushing traffic TO the channel rather than the channel feeding the course.
+  document.querySelectorAll('.watch a.cta').forEach(function (a) {
+    a.addEventListener('click', function () { ev('Watch Clicked'); });
+  });
+  document.querySelectorAll('audio').forEach(function (a) {
+    a.addEventListener('play', function () { ev('Course Start'); ev('Audio Played'); });
+  });
+  document.querySelectorAll('a.textver').forEach(function (a) {
+    a.addEventListener('click', function () { ev('Text Version'); });
+  });
+  // Nurses and receptionists genuinely print these — the print stylesheet exists
+  // because of it. An unmeasured print is a completed lesson counted as a bounce.
+  if (window.matchMedia) {
+    try {
+      window.matchMedia('print').addEventListener('change', function (m) {
+        if (m.matches) ev('Sheet Printed');
+      });
+    } catch (e) {}
+  }
+  window.addEventListener('beforeprint', function () { ev('Sheet Printed'); });
   // Progress survives a reload — a learner working through eight drills will lose
   // their answers to a stray refresh otherwise, and that is enough to make them stop.
   var KEY = 'ode:engineering-the-technical-meeting';
@@ -473,6 +540,7 @@ Two lines from this lesson still work here, and one of them is something you alr
     t.addEventListener('input', function () {
       saved[i] = t.value;
       persist();
+      ev('Course Start');
     });
   });
 
@@ -484,8 +552,8 @@ Two lines from this lesson still work here, and one of them is something you alr
   var N_CONF = document.querySelectorAll('.conf').length;
   var TOTAL = N_AB + N_DRILL + N_CONF;
   saved.done = saved.done || {};
-  function markDone(id) { saved.done[id] = 1; persist(); paint(); }
-  function paint() {
+  function markDone(id) { saved.done[id] = 1; persist(); ev('Course Start'); paint(true); }
+  function paint(live) {
     if (!TOTAL) return;
     var n = Object.keys(saved.done).length;
     var pct = Math.min(100, Math.round(n * 100 / TOTAL));
@@ -493,6 +561,18 @@ Two lines from this lesson still work here, and one of them is something you alr
     m.hidden = false;
     document.getElementById('barfill').style.width = pct + '%';
     document.getElementById('barpct').textContent = pct + '%';
+    // Completion is recorded ONCE PER LEARNER, not once per page load. paint()
+    // runs on every visit and replays saved progress, so an unguarded call would
+    // re-report a finished lesson every time that person opened it again — the
+    // one metric where a returning learner would look like a new completion.
+    if (pct >= 100 && !saved.completed) {
+      saved.completed = 1; persist();
+      // `live` is false on the load-time paint. Anyone who finished BEFORE this
+      // instrumentation shipped is marked complete and never counted — a backfill
+      // spike would land as completions with no matching starts, which is the one
+      // shape that makes a funnel read as broken rather than as new.
+      if (live) ev('Course Complete', {items: String(TOTAL)});
+    }
   }
 
   // ── The A/B contrast: commit, THEN reveal ───────────────────────────────
@@ -520,6 +600,9 @@ Two lines from this lesson still work here, and one of them is something you alr
         : 'Not that one. Here is what the other line does instead.';
       document.getElementById('ab' + n).hidden = false;
       saved['ab' + n] = right ? 1 : 0;
+      // Fired BEFORE markDone so the property describes the first commit rather
+      // than whichever card happened to be last.
+      ev('Deck Answered', {correct: right ? 'yes' : 'no'});
       markDone('ab' + n);
     });
   });
@@ -540,13 +623,22 @@ Two lines from this lesson still work here, and one of them is something you alr
       document.querySelectorAll('button.pt[data-phase="' + phase + '"]').forEach(
         function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
       markDone('conf-' + phase);
-      showDelta();
+      showDelta(true);
     });
   });
-  function showDelta() {
+  function showDelta(live) {
     var el = document.getElementById('delta');
     if (!el || saved.pre == null || saved.post == null) return;
     var d = saved.post - saved.pre;
+    if (live && !saved.confSent) { saved.confSent = 1; persist();
+    // The delta is the channel's only outcome measure — CTR is structurally
+    // unfetchable from the YouTube API, so this is the one number that speaks to
+    // whether the teaching worked rather than to whether the packaging did.
+    // Reported WITH the pre value: a 2->4 and a 4->6 are both "+2" and are not
+    // the same event, and quoting the mean delta alone hides that.
+    ev('Confidence Recorded', {
+      delta: (d > 0 ? '+' : '') + d, pre: String(saved.pre), post: String(saved.post)
+    }); }
     el.textContent = d > 0
       ? 'Up ' + d + ' since you started.'
       : (d === 0
@@ -578,9 +670,13 @@ Two lines from this lesson still work here, and one of them is something you alr
   });
   showDelta();
   paint();
-  document.getElementById('gate').addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    var f = new FormData(ev.target);
+  // The parameter is `evt`, not `ev` — `ev` is the instrumentation helper above and
+  // a handler parameter of the same name shadows it, so every call inside this
+  // function would throw "ev is not a function" and lose the one conversion event
+  // that matters. Caught while wiring it; nothing would have reported the loss.
+  document.getElementById('gate').addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    var f = new FormData(evt.target);
     var msg = document.getElementById('gatemsg');
     msg.textContent = 'Sending...';
     // The key is OMITTED when there is no first name, never sent as null. The
@@ -601,6 +697,11 @@ Two lines from this lesson still work here, and one of them is something you alr
       msg.textContent = r.ok
         ? 'Sent. Check your inbox for the printable sheet.'
         : 'Something went wrong. Try again in a moment.';
+      // Only on r.ok. Counting attempts as conversions is how a broken endpoint
+      // reports a healthy funnel — which is exactly the state this page was in
+      // for its entire life until yesterday, posting to a procedure that did not
+      // exist and showing the same message either way.
+      if (r.ok) ev('Sheet Signup');
     }).catch(function () {
       msg.textContent = 'Something went wrong. Try again in a moment.';
     });

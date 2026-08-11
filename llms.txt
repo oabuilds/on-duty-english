@@ -1,0 +1,23 @@
+# On Duty English — Practice
+
+> Free workplace-English practice pages for people who already speak English and work in English: nurses, receptionists, engineers, sales reps and software developers. Each page teaches the exact lines a senior professional uses in one specific situation, and why the obvious phrasing loses to them. Not vocabulary, not beginner English — functional register at B1–C1.
+
+Content-Signal: ai-train=no, ai-input=yes
+
+## Lessons
+
+- [8 English Lines That Engineers Use in a Site Safety Briefing](https://ondutyenglish.com/practice/engineering-the-site-briefing/text.md): Eight lines for the three minutes before work starts, each with the reason it works and the weaker version it replaces. Listen, then say each one out loud.
+- [8 Engineering English Lines That Stop a Design Review Delay](https://ondutyenglish.com/practice/engineering-the-technical-meeting/text.md): Eight lines for the meeting where you are technically right and outranked. These are not vocabulary words. They are the exact sentences a senior engineer uses, in the order they use them.
+- [8 English Lines Hotel Staff Use With Angry Guests](https://ondutyenglish.com/practice/hospitality-the-complaint/text.md): Eight phrases for the moment a guest complaint becomes serious. These are not vocabulary words. They are the exact sentences a senior front desk professional uses, in the order they use them.
+- [8 Diagnosis Lines That Ward Doctors Use, in Plain English](https://ondutyenglish.com/practice/medical-the-diagnosis/text.md): Eight lines for the moment you have to explain a diagnosis to someone who is frightened. These are not vocabulary words. They are the exact sentences a senior doctor uses, in the order they use them.
+- [8 English Lines Nurses Use When an On-Call Doctor Says Wait](https://ondutyenglish.com/practice/medical-the-escalation/text.md): Eight phrases for the moment you need a colleague to act. These are not vocabulary words. They are the exact sentences a senior nurse uses, in the order they use them.
+- [8 English Lines That Make a Nurse Handover Work](https://ondutyenglish.com/practice/medical-the-handover/text.md): Eight lines for handing over a patient at the end of a shift, each with the reason it works and the weaker version it replaces. Listen, then say each one out loud.
+- [8 NHS Telephone Triage English Lines That Nurses Use](https://ondutyenglish.com/practice/medical-the-triage-call/text.md): Eight questions for a call where you cannot see the person you are assessing. These are not vocabulary words. They are the exact questions a senior triage nurse asks, in the order she asks them.
+- [8 Sales English Lines That Find the Real Objection](https://ondutyenglish.com/practice/sales-the-objection/text.md): Eight lines for the moment a client objects. Most of the time the objection is about pricing, and most of the time the price is not what is actually stopping them. Each line has the reason it works and the weaker version it replaces.
+- [8 Code Review English Comments That Every Developer Needs](https://ondutyenglish.com/practice/tech-the-code-review/text.md): Eight lines for a code review: four for writing one and four for answering one. Each carries the reason it works and the weaker version most people reach for instead.
+- [8 English Lines Developers Use in a Stand-Up When Blocked](https://ondutyenglish.com/practice/tech-the-standup/text.md): Eight lines for the forty seconds you get in a daily stand-up, including the hard half — saying you are blocked, and asking for help with a time on it. These are not vocabulary words. They are the exact sentences a senior developer uses, in the order they use them.
+
+## Optional
+
+- [All lessons](https://ondutyenglish.com/practice/): the index page
+- [Sitemap](https://ondutyenglish.com/practice/sitemap.xml): every URL
